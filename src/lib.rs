@@ -7,12 +7,28 @@ pub use bindings::*;
 
 mod bindings;
 
+// TODO: how do we make this async safe...
+static mut SPIWriter: Option<fn(address: u8, value: i32)> = None;
+
 #[no_mangle]
-pub extern "C" fn tmc2240_writeInt(tmc2240: *mut TMC2240TypeDef, address: u8, value: i32) {
-    // this is where we'll do SPI stuff... somehow...
+pub extern "C" fn tmc2240_writeInt(_tmc2240: *mut TMC2240TypeDef, address: u8, value: i32) {
+    // from the eval board example... we'll only do SPI tho
+    /*
+    if(commMode == TMC_BOARD_COMM_SPI)
+    {
+        spi_writeInt(TMC2240_SPIChannel,  address,  value);
+    }
+    else if (commMode == TMC_BOARD_COMM_UART)
+    {
+        //UART_writeInt(TMC2240_UARTChannel,  targetAddressUart,  address,  value);
+        tmc2240_UARTwriteInt(TMC2240_UARTChannel,  address,  value);
+    }
+    */
+
     unsafe {
-        // to see if it worked...
-        (*tmc2240).velocity = 999;
+        if let Some(writer) = SPIWriter {
+            writer(address, value)
+        }
     }
 }
 
@@ -51,11 +67,16 @@ pub fn periodic(tmc2240: &mut TMC2240TypeDef, tick: u32) {
 
 #[cfg(test)]
 mod tests {
-    use crate::{new, periodic};
+    use crate::{new, periodic, SPIWriter};
 
     use super::bindings::*;
 
-    unsafe extern "C" fn callback(tmc2240: *mut TMC2240TypeDef, state: ConfigState) {}
+    static mut wrote: bool = false;
+    fn fakeSpi(a: u8, v: i32) {
+        unsafe {
+            wrote = true;
+        }
+    }
 
     #[test]
     fn it_works() {
@@ -70,7 +91,11 @@ mod tests {
         };
         let registerResetState = [0i32; 128usize];
 
-        let mut ic = new(0, config, &registerResetState, Some(callback));
+        unsafe {
+            SPIWriter = Some(fakeSpi);
+        }
+
+        let mut ic = new(0, config, &registerResetState, None);
         unsafe {
             tmc2240_reset(&mut ic);
         }
@@ -78,13 +103,15 @@ mod tests {
         let mut i = 0;
         unsafe {
             while ((*ic.config).state != ConfigState_CONFIG_READY) && i < 512 {
-                i+=1;
+                i += 1;
                 periodic(&mut ic, 12345);
             }
         }
         assert_eq!(4, 4);
         assert_ne!(i, 512);
         assert_ne!(i, 1);
-        assert_eq!(ic.velocity, 999);
+        unsafe {
+            assert_eq!(wrote, true);
+        }
     }
 }
