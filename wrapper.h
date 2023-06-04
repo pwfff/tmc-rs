@@ -2,3 +2,5 @@
 #define TMC_SKIP_INT_TYPEDEFS  // Disable s8, s16, s32, int8, int16 and int32 typedefs
 
 #include "tmc/ic/TMC2240/TMC2240.h"
+
+void tmc2240_writeInt(TMC2240TypeDef *tmc2240, uint8_t address, int32_t value);
