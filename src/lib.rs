@@ -1,6 +1,7 @@
 #![allow(non_upper_case_globals)]
 #![allow(non_camel_case_types)]
 #![allow(non_snake_case)]
+#![no_std]
 
 pub use bindings::*;
 
@@ -8,7 +9,7 @@ mod bindings;
 
 #[no_mangle]
 pub extern "C" fn tmc2240_writeInt(tmc2240: *mut TMC2240TypeDef, address: u8, value: i32) {
-    println!("how tho");
+    // this is where we'll do SPI stuff... somehow...
     unsafe {
         // to see if it worked...
         (*tmc2240).velocity = 999;
@@ -68,7 +69,12 @@ mod tests {
             channel: 0,
         };
         let registerResetState = [0i32; 128usize];
+
         let mut ic = new(0, config, &registerResetState, Some(callback));
+        unsafe {
+            tmc2240_reset(&mut ic);
+        }
+
         let mut i = 0;
         unsafe {
             while ((*ic.config).state != ConfigState_CONFIG_READY) && i < 512 {
