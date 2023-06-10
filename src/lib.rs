@@ -3,12 +3,12 @@
 #![allow(non_snake_case)]
 #![no_std]
 
-pub use bindings::*;
+pub use bindings::root::*;
 
-mod bindings;
+pub mod bindings;
 
 // TODO: how do we make this async safe...
-static mut SPIWriter: Option<fn(address: u8, value: i32)> = None;
+pub static mut SPIWriter: Option<fn(address: u8, value: i32)> = None;
 
 #[no_mangle]
 pub extern "C" fn tmc2240_writeInt(_tmc2240: *mut TMC2240TypeDef, address: u8, value: i32) {
@@ -69,7 +69,7 @@ pub fn periodic(tmc2240: &mut TMC2240TypeDef, tick: u32) {
 mod tests {
     use crate::{new, periodic, SPIWriter};
 
-    use super::bindings::*;
+    use super::bindings::root::*;
 
     static mut wrote: bool = false;
     fn fakeSpi(a: u8, v: i32) {
