@@ -3,7 +3,7 @@
 #![allow(non_snake_case)]
 #![no_std]
 
-pub use bindings::root::*;
+pub use bindings::*;
 
 pub mod bindings;
 
@@ -69,7 +69,7 @@ pub fn periodic(tmc2240: &mut TMC2240TypeDef, tick: u32) {
 mod tests {
     use crate::{new, periodic, SPIWriter};
 
-    use super::bindings::root::*;
+    use super::bindings::*;
 
     static mut wrote: bool = false;
     fn fakeSpi(a: u8, v: i32) {

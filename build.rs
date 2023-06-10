@@ -20,7 +20,7 @@ fn main() {
 
     // Tell cargo to tell rustc to link our `hello` library. Cargo will
     // automatically know it must look for a `libhello.a` file.
-    println!("cargo:rustc-link-lib=TMC2240");
+    println!("cargo:rustc-link-lib=static=TMC2240");
     //println!("cargo:rustc-link-lib=Ramp");
 
     // Tell cargo to tell rustc to link the system bzip2
@@ -51,11 +51,11 @@ fn main() {
         .header("wrapper.h")
         // for no_std
         .use_core()
-        .raw_line("extern crate tmc_rs_macros;")
-        .raw_line("use tmc_rs_macros::generate_fields;")
-        .raw_line("")
-        .raw_line("#[generate_fields]")
-        .enable_cxx_namespaces()
+        // .enable_cxx_namespaces()
+        // .raw_line("extern crate tmc_rs_macros;")
+        // .raw_line("use tmc_rs_macros::generate_fields;")
+        // .raw_line("")
+        // .raw_line("#[generate_fields]")
         .ctypes_prefix("cty")
         .clang_arg(format!("-I{}", tmc_path.clone().display()))
         // Tell cargo to invalidate the built crate whenever any of the
