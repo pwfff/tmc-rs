@@ -40,6 +40,7 @@ fn main() {
         .file(ic_c_path)
         .file(ramp_c_path)
         .file(linear_ramp_c_path)
+        .opt_level(0)
         .compile("TMC2240");
 
     // The bindgen::Builder is the main entry point

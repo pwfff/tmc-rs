@@ -6,6 +6,7 @@
 pub use bindings::*;
 
 pub mod bindings;
+pub mod registers;
 
 // TODO: how do we make this async safe...
 pub static mut SPIWriter: Option<fn(address: u8, value: i32)> = None;
@@ -31,6 +32,41 @@ pub extern "C" fn tmc2240_writeInt(_tmc2240: *mut TMC2240TypeDef, address: u8, v
         }
     }
 }
+
+// https://github.com/rust-lang/rust-bindgen/issues/1266
+#[rustfmt::skip]
+pub const tmc2240_defaultRegisterResetState: [u32; TMC2240_REGISTER_COUNT as usize] = [
+//	0,   1,   2,   3,   4,   5,   6,   7,   8,   9,   A,   B,   C,   D,   E,   F
+    R00, 0,   0,   0,   0,   0,   0,   0,   0,   0,   R0A, 0,   0,   0,   0,   0, // 0x00 - 0x0F
+    0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, // 0x10 - 0x1F
+    0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, // 0x20 - 0x2F
+    0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   R3A, 0,   0,   0,   0,   0, // 0x30 - 0x3F
+    0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, // 0x40 - 0x4F
+    0,   0,   R52, 0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, // 0x50 - 0x5F
+    R60, R61, R62, R63, R64, R65, R66, R67, R68, R69, 0,   0,   R6C, 0,   0,   0, // 0x60 - 0x6F
+    R70, 0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, // 0x70 - 0x7F
+];
+
+// Register access permissions:
+//   0x00: none (reserved)
+//   0x01: read
+//   0x02: write
+//   0x03: read/write
+//   0x13: read/write, separate functions/values for reading or writing
+//   0x23: read/write, flag register (write to clear)
+//   0x42: write, has hardware presets on reset
+#[rustfmt::skip]
+pub const tmc2240_defaultRegisterAccess: [u8; TMC2240_REGISTER_COUNT as usize] = [
+//	0     1     2     3     4     5     6     7     8     9     A     B     C     D     E     F
+	0x03, 0x23, 0x01, 0x03, 0x03,    0,    0,    0,    0,    0, 0x03, 0x03,    0,    0,    0,    0, // 0x00 - 0x0F
+	0x03, 0x03, 0x01, 0x03, 0x03, 0x03,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0, // 0x10 - 0x1F
+	   0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0, 0x03,    0,    0, // 0x20 - 0x2F
+	   0,    0,    0,    0,    0,    0,    0,    0, 0x03, 0x03, 0x03, 0x23, 0x01,    0,    0,    0, // 0x30 - 0x3F
+	   0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0, // 0x40 - 0x4F
+	0x01, 0x01, 0x03,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0, // 0x50 - 0x5F
+	0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x01, 0x01, 0x03, 0x03,    0, 0x01, // 0x60 - 0x6F
+	0x03, 0x01, 0x01,    0, 0x03, 0x01, 0x01,    0,    0,    0,    0,    0,    0,    0,    0,    0  // 0x70 - 0x7F
+];
 
 pub fn new(
     channel: u8,
@@ -63,6 +99,61 @@ pub fn new(
 
 pub fn periodic(tmc2240: &mut TMC2240TypeDef, tick: u32) {
     unsafe { tmc2240_periodicJob(tmc2240, tick) }
+}
+
+#[derive(Default, Debug)]
+pub struct GStat {
+    pub vm_uvlo: bool,
+    pub register_reset: bool,
+    pub uv_cp: bool,
+    pub drv_err: bool,
+    pub reset: bool,
+}
+
+impl From<u8> for GStat {
+    fn from(value: u8) -> Self {
+        let mut status = Self::default();
+
+        for (f, m) in [
+            (&mut status.reset, TMC2240_RESET_MASK),
+            (&mut status.drv_err, TMC2240_DRV_ERR_MASK),
+            (&mut status.uv_cp, TMC2240_UV_CP_MASK),
+            (&mut status.register_reset, TMC2240_REGISTER_RESET_MASK),
+            (&mut status.vm_uvlo, TMC2240_VM_UVLO_MASK),
+        ] {
+            *f = ((value) & m as u8) > 0;
+        }
+
+        status
+    }
+}
+
+#[derive(Default, Debug)]
+pub struct SPIStatus {
+    pub reset: bool,
+    pub driver_error: bool,
+    pub sg2: bool,
+    pub standstill: bool,
+}
+
+impl From<u8> for SPIStatus {
+    fn from(value: u8) -> Self {
+        let mut status = Self::default();
+
+        for (f, m) in [
+            (&mut status.reset, TMC2240_SPI_STATUS_RESET_FLAG_MASK),
+            (
+                &mut status.driver_error,
+                TMC2240_SPI_STATUS_DRIVER_ERROR_MASK,
+            ),
+            (&mut status.sg2, TMC2240_SPI_STATUS_SG2_MASK),
+            (&mut status.standstill, TMC2240_SPI_STATUS_STANDSTILL_MASK),
+        ] {
+            *f = ((value) & m as u8) > 0;
+        }
+
+        status
+    }
 }
 
 #[cfg(test)]

@@ -1,39 +1,39 @@
-extern crate proc_macro;
 use proc_macro::TokenStream;
-use quote::ToTokens;
-use regex::Regex;
-use syn::{parse_macro_input, Item, ItemMod};
+use syn::{parse_macro_input, DeriveInput, Ident, LitInt};
 
-// hey this was gonna be a cool thing to help me map addresses + shifts + masks
-// to actual struct definitions, but it turns out the API code sucks and doesn't
-// name the registers consistently
-struct TMC2240Field {}
+extern crate syn;
+#[macro_use]
+extern crate quote;
 
-#[proc_macro_attribute]
-pub fn generate_fields(_attr: TokenStream, input: TokenStream) -> TokenStream {
-    let re = Regex::new(r"^TMC2240_([A-Z_]+)_([A-Z]+)$").unwrap();
+#[proc_macro_derive(Register, attributes(addr))]
+pub fn register(input: TokenStream) -> TokenStream {
+    let m = parse_macro_input!(input as DeriveInput);
+    let addr = parse_addr(&m);
 
-    let m = parse_macro_input!(input as ItemMod);
-    let items = m.clone().content.unwrap().1;
-    for item in items {
-        if let Item::Const(c) = item {
-            let name = c.ident.to_string();
-            if let Some(m) = re.captures(&name) {
-                if let Some(field) = m.get(1) {
-                    println!("{}", field.as_str());
-                    continue;
-                } else {
-                    continue;
-                }
-                if let Some(kind) = m.get(2) {
-                    continue;
-                } else {
-                    continue;
-                }
-            };
+    impl_register(&m.ident, &addr).into()
+}
+
+fn parse_addr(ast: &DeriveInput) -> LitInt {
+    ast.attrs
+        .iter()
+        .filter(|a| a.path().segments.len() == 1 && a.path().segments[0].ident == "addr")
+        .nth(0)
+        .expect("addr attribute required for deriving Register!")
+        .parse_args()
+        .expect("Invalid addr args")
+}
+
+fn impl_register(name: &Ident, addr: &LitInt) -> proc_macro2::TokenStream {
+    // ... do stuff with `parameters`
+    quote! {
+        impl Register for #name {
+            fn addr() -> u8 {
+                #addr
+            }
+
+            fn as_word(&self) -> u32 {
+                u32::from_be_bytes(self.into_bytes())
+            }
         }
     }
-
-    m.to_token_stream().into()
 }
-// TMC2240_SPI_STATUS_RESET_FLAG_MASK
