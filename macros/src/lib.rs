@@ -31,12 +31,8 @@ fn impl_register(name: &Ident, addr: &LitInt) -> proc_macro2::TokenStream {
                 #addr
             }
 
-            fn as_word(&self) -> u32 {
-                u32::from_be_bytes(self.into_bytes())
-            }
-
-            fn bytes(&self) -> [u8; 4] {
-                self.into_bytes().map(|b| b.reverse_bits())
+            fn bytes(self) -> [u8; 4] {
+                u32::from(self).to_be_bytes()
             }
         }
     }

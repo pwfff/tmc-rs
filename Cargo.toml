@@ -9,7 +9,7 @@ edition = "2021"
 cty = "0.2.2"
 log = { version = "0.4.17", default-features = false }
 embedded-hal = "0.2.7"
-modular-bitfield = "0.11.2"
+bitfield-struct = "0.5"
 tmc-rs-macros = { path = "./macros" }
 anyhow = "1.0.71"
 

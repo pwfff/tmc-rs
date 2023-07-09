@@ -1,18 +1,14 @@
-use modular_bitfield::bitfield;
-use modular_bitfield::prelude::*;
-use modular_bitfield::BitfieldSpecifier;
+use bitfield_struct::bitfield;
 use embedded_hal::blocking::spi::Transfer;
 
 use tmc_rs_macros::Register;
 
 use super::Register;
 use super::Registers;
-use super::WritableRegister;
 
 pub const TMC2240_REGISTER_COUNT: usize = 128;
 
-#[bitfield]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct TMC2240 {
     // 0x00 - 0x0F
     pub GCONF: GCONF,
@@ -20,17 +16,8 @@ pub struct TMC2240 {
     pub IFCNT: IFCNT,
     pub NODECONF: NODECONF,
     pub IOIN: IOIN,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
     pub DRV_CONF: DRV_CONF,
     pub GLOBAL_SCALER: GLOBAL_SCALER,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
 
     // 0x10 - 0x1F
     pub IHOLD_IRUN: IHOLD_IRUN,
@@ -39,88 +26,23 @@ pub struct TMC2240 {
     pub TPWMTHRS: TPWMTHRS,
     pub TCOOLTHRS: TCOOLTHRS,
     pub THIGH: THIGH,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
 
     // 0x20 - 0x2F
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
     pub DIRECT_MODE: DIRECT_MODE,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
 
     // 0x30 - 0x3F
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
     pub ENCMODE: ENCMODE,
     pub XENC: X_ENC,
     pub ENC_CONST: ENC_CONST,
     pub ENC_STATUS: ENC_STATUS,
     pub ENC_LATCH: ENC_LATCH,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
 
     // 0x40 - 0x4F
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
 
     // 0x50 - 0x5F
     pub ADC_VSUPPLY_AIN: ADC_VSUPPLY_AIN,
     pub ADC_TEMP: ADC_TEMP,
     pub OTW_OV_VTH: OTW_OV_VTH,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
 
     // 0x60 - 0x6F
     pub MSLUT0: MSLUT_0,
@@ -137,68 +59,35 @@ pub struct TMC2240 {
     pub MSCURACT: MSCURACT,
     pub CHOPCONF: CHOPCONF,
     pub COOLCONF: COOLCONF,
-    #[rustfmt::skip] #[skip] __: B32,
     pub DRVSTATUS: DRV_STATUS,
 
     // 0x70 - 0x7F
     pub PWMCONF: PWMCONF,
     pub PWMSCALE: PWM_SCALE,
     pub PWM_AUTO: PWM_AUTO,
-    #[rustfmt::skip] #[skip] __: B32,
     pub SG4_THRS: SG4_THRS,
     pub SG4_RESULT: SG4_RESULT,
     pub SG4_IND: SG4_IND,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-    #[rustfmt::skip] #[skip] __: B32,
-}
-
-impl Default for TMC2240 {
-    fn default() -> Self {
-        Self::new()
-            .with_GCONF(GCONF::default())
-            .with_DRV_CONF(DRV_CONF::default())
-            .with_ENC_CONST(ENC_CONST::default())
-            .with_OTW_OV_VTH(OTW_OV_VTH::default())
-            .with_MSLUT0(MSLUT_0::default())
-            .with_MSLUT1(MSLUT_1::default())
-            .with_MSLUT2(MSLUT_2::default())
-            .with_MSLUT3(MSLUT_3::default())
-            .with_MSLUT4(MSLUT_4::default())
-            .with_MSLUT5(MSLUT_5::default())
-            .with_MSLUT6(MSLUT_6::default())
-            .with_MSLUT7(MSLUT_7::default())
-            .with_MSLUTSEL(MSLUTSEL::default())
-            .with_MSLUTSTART(MSLUTSTART::default())
-            .with_CHOPCONF(CHOPCONF::default())
-            .with_PWMCONF(PWMCONF::default())
-    }
 }
 
 impl Registers<TMC2240_REGISTER_COUNT> for TMC2240 {
     fn reset<S: Transfer<u8>>(&self, spi: &mut S) -> Result<(), S::Error> {
-        self.GCONF().write(spi)?;
-        self.DRV_CONF().write(spi)?;
-        self.ENC_CONST().write(spi)?;
-        self.OTW_OV_VTH().write(spi)?;
-        self.MSLUT0().write(spi)?;
-        self.MSLUT1().write(spi)?;
-        self.MSLUT2().write(spi)?;
-        self.MSLUT3().write(spi)?;
-        self.MSLUT4().write(spi)?;
-        self.MSLUT5().write(spi)?;
-        self.MSLUT6().write(spi)?;
-        self.MSLUT7().write(spi)?;
-        self.MSLUTSEL().write(spi)?;
-        self.MSLUTSTART().write(spi)?;
-        self.CHOPCONF().write(spi)?;
-        self.PWMCONF().write(spi)?;
+        self.GCONF.write(spi)?;
+        self.DRV_CONF.write(spi)?;
+        self.ENC_CONST.write(spi)?;
+        self.OTW_OV_VTH.write(spi)?;
+        self.MSLUT0.write(spi)?;
+        self.MSLUT1.write(spi)?;
+        self.MSLUT2.write(spi)?;
+        self.MSLUT3.write(spi)?;
+        self.MSLUT4.write(spi)?;
+        self.MSLUT5.write(spi)?;
+        self.MSLUT6.write(spi)?;
+        self.MSLUT7.write(spi)?;
+        self.MSLUTSEL.write(spi)?;
+        self.MSLUTSTART.write(spi)?;
+        self.CHOPCONF.write(spi)?;
+        self.PWMCONF.write(spi)?;
 
         Ok(())
     }
@@ -223,20 +112,20 @@ impl Registers<TMC2240_REGISTER_COUNT> for TMC2240 {
 //    }
 //}
 
-#[bitfield]
-#[derive(Register, BitfieldSpecifier, Copy, Clone, Eq, PartialEq, Debug)]
+#[bitfield(u32, default = false)]
+#[derive(Register, Eq, PartialEq)]
 #[addr(0x00)]
 pub struct GCONF {
-    #[rustfmt::skip] #[skip] __: B8,
+    #[rustfmt::skip] #[skip] __: u8,
 
-    #[rustfmt::skip] #[skip] __: B7,
+    #[rustfmt::skip] #[bits(7)] __: u8,
     pub direct_mode: bool,
 
     pub stop_enable: bool,
     pub small_hysteris: bool,
     pub diag1_pushpull: bool,
     pub diag0_pushpull: bool,
-    #[rustfmt::skip] #[skip] __: B1,
+    #[rustfmt::skip] #[skip] __: bool,
     pub diag1_onstate: bool,
     pub diag1_index: bool,
     pub diag1_stall: bool,
@@ -248,10 +137,10 @@ pub struct GCONF {
     pub multistep_filt: bool,
     pub en_pwm_mode: bool,
     pub fast_standstill: bool,
-    #[rustfmt::skip] #[skip] __: B1,
+    #[rustfmt::skip] #[skip] __: bool,
 }
 
-impl WritableRegister for GCONF {
+impl Default for GCONF {
     fn default() -> Self {
         Self::new().with_multistep_filt(true)
     }
@@ -259,7 +148,7 @@ impl WritableRegister for GCONF {
 
 #[cfg(test)]
 mod test {
-    use crate::registers::{WritableRegister, Register, tmc2240::CHOPCONF};
+    use crate::registers::{Register, tmc2240::CHOPCONF};
 
     use super::GCONF;
 
@@ -281,17 +170,17 @@ mod test {
     }
 }
 
-#[bitfield]
-#[derive(Register, BitfieldSpecifier, Copy, Clone, Eq, PartialEq, Debug)]
+#[bitfield(u32)]
+#[derive(Register, Eq, PartialEq)]
 #[addr(0x01)]
 pub struct GSTAT {
-    #[rustfmt::skip] #[skip] __: B8,
+    __: u8,
 
-    #[rustfmt::skip] #[skip] __: B8,
+    __: u8,
 
-    #[rustfmt::skip] #[skip] __: B8,
+    __: u8,
 
-    #[rustfmt::skip] #[skip] __: B3,
+    #[rustfmt::skip] #[bits(3)] __: u8,
     pub vm_uvlo: bool,
     pub register_reset: bool,
     pub uv_cp: bool,
@@ -299,20 +188,21 @@ pub struct GSTAT {
     pub reset: bool,
 }
 
-#[bitfield]
-#[derive(Register, BitfieldSpecifier, Copy, Clone, Eq, PartialEq, Debug)]
+#[bitfield(u32)]
+#[derive(Register, Eq, PartialEq)]
 #[addr(0x02)]
 pub struct IFCNT {
-    #[rustfmt::skip] #[skip] __: B8,
+    __: u8,
 
-    #[rustfmt::skip] #[skip] __: B8,
+    __: u8,
 
-    #[rustfmt::skip] #[skip] __: B8,
+    __: u8,
 
     pub interface_transmission_counter: u8,
 }
 
-#[derive(BitfieldSpecifier, Debug)]
+#[derive(Debug, PartialEq, Eq)]
+#[repr(u8)]
 pub enum SENDDELAY {
     EIGHT,
     _1,
@@ -332,28 +222,50 @@ pub enum SENDDELAY {
     _15,
 }
 
-#[bitfield]
-#[derive(Register, BitfieldSpecifier, Copy, Clone, Eq, PartialEq, Debug)]
+impl SENDDELAY {
+    // This has to be a const fn
+    const fn into_bits(self) -> u32 {
+        self as _
+    }
+    const fn from_bits(value: u32) -> Self {
+        match value {
+            0 => Self::EIGHT,
+            2 => Self::THREE_X_EIGHT,
+            4 => Self::FIVE_X_EIGHT,
+            6 => Self::SEVEN_X_EIGHT,
+            8 => Self::NINE_X_EIGHT,
+            10 => Self::ELEVEN_X_EIGHT,
+            12 => Self::THIRTEEN_X_EIGHT,
+            14 => Self::FIFTEEN_X_EIGHT,
+            _ => Self::EIGHT,
+        }
+    }
+}
+
+#[bitfield(u32)]
+#[derive(Register, Eq, PartialEq)]
 #[addr(0x03)]
 pub struct NODECONF {
-    #[rustfmt::skip] #[skip] __: B8,
+    __: u8,
 
-    #[rustfmt::skip] #[skip] __: B8,
+    __: u8,
 
-    #[rustfmt::skip] #[skip] __: B4,
+    #[rustfmt::skip] #[bits(4)] __: u8,
+    #[bits(4)]
     pub SENDDELAY: SENDDELAY,
 
     pub NODEADDR: u8,
 }
 
-#[bitfield]
-#[derive(Register, BitfieldSpecifier, Copy, Clone, Eq, PartialEq, Debug)]
+#[bitfield(u32)]
+#[derive(Register, Eq, PartialEq)]
 #[addr(0x04)]
 pub struct IOIN {
     pub VERSION: u8,
 
-    #[rustfmt::skip] #[skip] __: B5,
-    pub SILICON_RV: B3,
+    #[rustfmt::skip] #[bits(5)] __: u8,
+    #[bits(3)]
+    pub SILICON_RV: u8,
 
     pub ADC_ERR: bool,
     pub EXT_CLK: bool,
@@ -374,7 +286,8 @@ pub struct IOIN {
     pub STEP: bool,
 }
 
-#[derive(BitfieldSpecifier, Debug)]
+#[derive(Debug, PartialEq, Eq)]
+#[repr(u8)]
 pub enum SLOPE_CONTROL {
     V_PER_US_100,
     V_PER_US_200,
@@ -382,7 +295,24 @@ pub enum SLOPE_CONTROL {
     V_PER_US_800,
 }
 
-#[derive(BitfieldSpecifier, Debug)]
+impl SLOPE_CONTROL {
+    // This has to be a const fn
+    const fn into_bits(self) -> u32 {
+        self as _
+    }
+    const fn from_bits(value: u32) -> Self {
+        match value {
+            0 => Self::V_PER_US_100,
+            1 => Self::V_PER_US_200,
+            2 => Self::V_PER_US_400,
+            3 => Self::V_PER_US_800,
+            _ => Self::V_PER_US_100,
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Eq)]
+#[repr(u8)]
 pub enum CURRENT_RANGE {
     ONE_AMP,
     TWO_AMP,
@@ -390,141 +320,162 @@ pub enum CURRENT_RANGE {
     ALSO_THREE_AMP,
 }
 
-#[bitfield]
-#[derive(Register, BitfieldSpecifier, Copy, Clone, Eq, PartialEq, Debug)]
-#[addr(0x0A)]
-pub struct DRV_CONF {
-    #[rustfmt::skip] #[skip] __: B8,
-
-    #[rustfmt::skip] #[skip] __: B8,
-
-    #[rustfmt::skip] #[skip] __: B8,
-
-    #[rustfmt::skip] #[skip] __: B2,
-    pub SLOPE_CONTROL: SLOPE_CONTROL,
-    #[rustfmt::skip] #[skip] __: B2,
-    pub CURRENT_RANGE: CURRENT_RANGE,
-}
-
-impl WritableRegister for DRV_CONF {
-    fn default() -> Self {
-        Self::new()
+impl CURRENT_RANGE {
+    // This has to be a const fn
+    const fn into_bits(self) -> u32 {
+        self as _
+    }
+    const fn from_bits(value: u32) -> Self {
+        match value {
+            0 => Self::ONE_AMP,
+            1 => Self::TWO_AMP,
+            2 => Self::THREE_AMP,
+            3 => Self::ALSO_THREE_AMP,
+            _ => Self::ONE_AMP,
+        }
     }
 }
 
-#[bitfield]
-#[derive(Register, BitfieldSpecifier, Copy, Clone, Eq, PartialEq, Debug)]
+#[bitfield(u32)]
+#[derive(Register, Eq, PartialEq)]
+#[addr(0x0A)]
+pub struct DRV_CONF {
+    __: u8,
+
+    __: u8,
+
+    __: u8,
+
+    #[rustfmt::skip] #[bits(2)] __: u8,
+    #[bits(2)]
+    pub SLOPE_CONTROL: SLOPE_CONTROL,
+    #[rustfmt::skip] #[bits(2)] __: u8,
+    #[bits(2)]
+    pub CURRENT_RANGE: CURRENT_RANGE,
+}
+
+#[bitfield(u32)]
+#[derive(Register, Eq, PartialEq)]
 #[addr(0x0B)]
 pub struct GLOBAL_SCALER {
-    #[rustfmt::skip] #[skip] __: B8,
+    __: u8,
 
-    #[rustfmt::skip] #[skip] __: B8,
+    __: u8,
 
-    #[rustfmt::skip] #[skip] __: B8,
+    __: u8,
 
     // note that 0 is full current, and 1-31 are not allowed for operation
     pub GLOBALSCALER: u8,
 }
 
-#[bitfield]
-#[derive(Register, BitfieldSpecifier, Copy, Clone, Eq, PartialEq, Debug)]
+#[bitfield(u32)]
+#[derive(Register, Eq, PartialEq)]
 #[addr(0x10)]
 pub struct IHOLD_IRUN {
-    #[rustfmt::skip] #[skip] __: B4,
-    pub IRUNDELAY: B4,
+    #[rustfmt::skip] #[bits(4)] __: u8,
+    #[bits(4)]
+    pub IRUNDELAY: u8,
 
-    #[rustfmt::skip] #[skip] __: B4,
-    pub IHOLDDELAY: B4,
+    #[rustfmt::skip] #[bits(4)] __: u8,
+    #[bits(4)]
+    pub IHOLDDELAY: u8,
 
-    #[rustfmt::skip] #[skip] __: B3,
-    pub IRUN: B5,
+    #[rustfmt::skip] #[bits(3)] __: u8,
+    #[bits(5)]
+    pub IRUN: u8,
 
-    #[rustfmt::skip] #[skip] __: B3,
-    pub IHOLD: B5,
+    #[rustfmt::skip] #[bits(3)] __: u8,
+    #[bits(5)]
+    pub IHOLD: u8,
 }
 
-#[bitfield]
-#[derive(Register, BitfieldSpecifier, Copy, Clone, Eq, PartialEq, Debug)]
+#[bitfield(u32)]
+#[derive(Register, Eq, PartialEq)]
 #[addr(0x11)]
 pub struct TPOWERDOWN {
-    #[rustfmt::skip] #[skip] __: B8,
+    __: u8,
 
-    #[rustfmt::skip] #[skip] __: B8,
+    __: u8,
 
-    #[rustfmt::skip] #[skip] __: B8,
+    __: u8,
 
     pub TPOWERDOWN: u8,
 }
 
-#[bitfield]
-#[derive(Register, BitfieldSpecifier, Copy, Clone, Eq, PartialEq, Debug)]
+#[bitfield(u32)]
+#[derive(Register, Eq, PartialEq)]
 #[addr(0x12)]
 pub struct TSTEP {
-    #[rustfmt::skip] #[skip] __: B8,
+    __: u8,
 
-    #[rustfmt::skip] #[skip] __: B4,
-    pub TSTEP: B20,
+    #[rustfmt::skip] #[bits(4)] __: u8,
+    #[bits(20)]
+    pub TSTEP: u32,
 }
 
-#[bitfield]
-#[derive(Register, BitfieldSpecifier, Copy, Clone, Eq, PartialEq, Debug)]
+#[bitfield(u32)]
+#[derive(Register, Eq, PartialEq)]
 #[addr(0x13)]
 pub struct TPWMTHRS {
-    #[rustfmt::skip] #[skip] __: B8,
+    __: u8,
 
-    #[rustfmt::skip] #[skip] __: B4,
-    pub TPWMTHRS: B20,
+    #[rustfmt::skip] #[bits(4)] __: u8,
+    #[bits(20)]
+    pub TPWMTHRS: u32,
 }
 
-#[bitfield]
-#[derive(Register, BitfieldSpecifier, Copy, Clone, Eq, PartialEq, Debug)]
+#[bitfield(u32)]
+#[derive(Register, Eq, PartialEq)]
 #[addr(0x14)]
 pub struct TCOOLTHRS {
-    #[rustfmt::skip] #[skip] __: B8,
+    __: u8,
 
-    #[rustfmt::skip] #[skip] __: B4,
-    pub TCOOLTHRS: B20,
+    #[rustfmt::skip] #[bits(4)] __: u8,
+    #[bits(20)]
+    pub TCOOLTHRS: u32,
 }
 
-#[bitfield]
-#[derive(Register, BitfieldSpecifier, Copy, Clone, Eq, PartialEq, Debug)]
+#[bitfield(u32)]
+#[derive(Register, Eq, PartialEq)]
 #[addr(0x15)]
 pub struct THIGH {
-    #[rustfmt::skip] #[skip] __: B8,
+    __: u8,
 
-    #[rustfmt::skip] #[skip] __: B4,
-    pub THIGH: B20,
+    #[rustfmt::skip] #[bits(4)] __: u8,
+    #[bits(20)]
+    pub THIGH: u32,
 }
 
-#[bitfield]
-#[derive(Register, BitfieldSpecifier, Copy, Clone, Eq, PartialEq, Debug)]
+#[bitfield(u32)]
+#[derive(Register, Eq, PartialEq)]
 #[addr(0x2D)]
 pub struct DIRECT_MODE {
-    #[rustfmt::skip] #[skip] __: B7,
+    #[rustfmt::skip] #[bits(7)] __: u8,
     pub DIRECT_COIL_A_NEGATIVE: bool,
 
     pub DIRECT_COIL_A: u8,
 
-    #[rustfmt::skip] #[skip] __: B7,
+    #[rustfmt::skip] #[bits(7)] __: u8,
     pub DIRECT_COIL_B_NEGATIVE: bool,
 
     pub DIRECT_COIL_B: u8,
 }
 
-#[bitfield]
-#[derive(Register, BitfieldSpecifier, Copy, Clone, Eq, PartialEq, Debug)]
+#[bitfield(u32)]
+#[derive(Register, Eq, PartialEq)]
 #[addr(0x38)]
 pub struct ENCMODE {
-    #[rustfmt::skip] #[skip] __: B8,
+    __: u8,
 
-    #[rustfmt::skip] #[skip] __: B8,
+    __: u8,
 
-    #[rustfmt::skip] #[skip] __: B5,
+    #[rustfmt::skip] #[bits(5)] __: u8,
     pub enc_sel_decimal: bool,
-    #[rustfmt::skip] #[skip] __: B1,
+    #[rustfmt::skip] #[skip] __: bool,
     pub clr_enc_x: bool,
 
-    pub pos_neg_edge: B2,
+    #[bits(2)]
+    pub pos_neg_edge: u8,
     pub clr_once: bool,
     pub clr_cont: bool,
     pub ignore_AB: bool,
@@ -533,75 +484,71 @@ pub struct ENCMODE {
     pub pol_A: bool,
 }
 
-// TODO: move
-#[bitfield]
-#[derive(BitfieldSpecifier, Debug)]
-pub struct SignedInteger {
-    pub sign: bool,
-    pub value: B31,
-}
-
-#[bitfield]
-#[derive(Register, BitfieldSpecifier, Copy, Clone, Eq, PartialEq, Debug)]
+#[bitfield(u32)]
+#[derive(Register, Eq, PartialEq)]
 #[addr(0x39)]
 pub struct X_ENC {
-    pub X_ENC: SignedInteger,
+    pub X_ENC: i32,
 }
 
-#[bitfield]
-#[derive(Register, BitfieldSpecifier, Copy, Clone, Eq, PartialEq, Debug)]
+#[bitfield(u32, default = false)]
+#[derive(Register, Eq, PartialEq)]
 #[addr(0x3A)]
 pub struct ENC_CONST {
-    pub ENC_CONST: SignedInteger,
+    pub ENC_CONST: i32,
 }
 
-impl WritableRegister for ENC_CONST {
+impl Default for ENC_CONST {
     fn default() -> Self {
-        Self::new().with_ENC_CONST(SignedInteger::new().with_value(0x00010000))
+        Self::new().with_ENC_CONST(0x00010000)
     }
 }
 
-#[bitfield]
-#[derive(Register, BitfieldSpecifier, Copy, Clone, Eq, PartialEq, Debug)]
+#[bitfield(u32)]
+#[derive(Register, Eq, PartialEq)]
 #[addr(0x3B)]
 pub struct ENC_STATUS {
-    #[rustfmt::skip] #[skip] __: B8,
+    __: u8,
 
-    #[rustfmt::skip] #[skip] __: B8,
+    __: u8,
 
-    #[rustfmt::skip] #[skip] __: B8,
+    __: u8,
 
-    #[rustfmt::skip] #[skip] __: B7,
+    #[rustfmt::skip] #[bits(7)] __: u8,
     pub n_event: bool,
 }
 
-#[bitfield]
-#[derive(Register, BitfieldSpecifier, Copy, Clone, Eq, PartialEq, Debug)]
+#[bitfield(u32)]
+#[derive(Register, Eq, PartialEq)]
 #[addr(0x3C)]
 pub struct ENC_LATCH {
     pub ENC_LATCH: u32,
 }
 
-#[bitfield]
-#[derive(Register, BitfieldSpecifier, Copy, Clone, Eq, PartialEq, Debug)]
+#[bitfield(u32)]
+#[derive(Register, Eq, PartialEq)]
 #[addr(0x50)]
 pub struct ADC_VSUPPLY_AIN {
-    #[rustfmt::skip] #[skip] __: B3,
-    pub ADC_AIN: B13,
+    #[rustfmt::skip] #[bits(3)] __: u8,
+    #[bits(13)]
+    pub ADC_AIN: u16,
 
-    #[rustfmt::skip] #[skip] __: B3,
-    pub ADC_VSUPPLY: B13,
+    #[rustfmt::skip] #[bits(3)] __: u8,
+    #[bits(13)]
+    pub ADC_VSUPPLY: u16,
 }
 
-#[bitfield]
-#[derive(Register, BitfieldSpecifier, Copy, Clone, Eq, PartialEq, Debug)]
+#[bitfield(u32)]
+#[derive(Register, Eq, PartialEq)]
 #[addr(0x51)]
 pub struct ADC_TEMP {
-    #[rustfmt::skip] #[skip] __: B3,
-    _RESERVED: B13,
+    #[rustfmt::skip] #[bits(3)] __: u8,
+    #[bits(13)]
+    _RESERVED: u16,
 
-    #[rustfmt::skip] #[skip] __: B3,
-    pub ADC_TEMP: B13,
+    #[rustfmt::skip] #[bits(3)] __: u8,
+    #[bits(13)]
+    pub ADC_TEMP: u16,
 }
 
 impl ADC_TEMP {
@@ -610,18 +557,20 @@ impl ADC_TEMP {
     }
 }
 
-#[bitfield]
-#[derive(Register, BitfieldSpecifier, Copy, Clone, Eq, PartialEq, Debug)]
+#[bitfield(u32, default = false)]
+#[derive(Register, Eq, PartialEq)]
 #[addr(0x52)]
 pub struct OTW_OV_VTH {
-    #[rustfmt::skip] #[skip] __: B3,
-    pub OVERTEMPPREWARNING_VTH: B13,
+    #[rustfmt::skip] #[bits(3)] __: u8,
+    #[bits(13)]
+    pub OVERTEMPPREWARNING_VTH: u16,
 
-    #[rustfmt::skip] #[skip] __: B3,
-    pub OVERVOLTAGE_VTH: B13,
+    #[rustfmt::skip] #[bits(3)] __: u8,
+    #[bits(13)]
+    pub OVERVOLTAGE_VTH: u16,
 }
 
-impl WritableRegister for OTW_OV_VTH {
+impl Default for OTW_OV_VTH {
     fn default() -> Self {
         Self::new()
             .with_OVERTEMPPREWARNING_VTH(0xB92)
@@ -632,16 +581,16 @@ impl WritableRegister for OTW_OV_VTH {
 // TODO: helpers for all this mslut stuff...
 macro_rules! mslut {
     ($name:ident, $addr:literal, $default:literal) => {
-        #[bitfield]
-        #[derive(Register, BitfieldSpecifier, Copy, Clone, Eq, PartialEq, Debug)]
+        #[bitfield(u32, default = false)]
+        #[derive(Register, Eq, PartialEq)]
         #[addr($addr)]
         pub struct $name {
-            pub $name: B32,
+            pub $name: u32,
         }
 
-        impl WritableRegister for $name {
+        impl Default for $name {
             fn default() -> Self {
-                Self::from_bytes($default.to_be_bytes())
+                Self::from($default)
             }
         }
     };
@@ -656,8 +605,8 @@ mslut!(MSLUT_5, 0x65, 0xB5BB777D_u32);
 mslut!(MSLUT_6, 0x66, 0x49295556_u32);
 mslut!(MSLUT_7, 0x67, 0x00404222_u32);
 
-#[bitfield]
-#[derive(Register, BitfieldSpecifier, Copy, Clone, Eq, PartialEq, Debug)]
+#[bitfield(u32, default = false)]
+#[derive(Register, Eq, PartialEq)]
 #[addr(0x68)]
 pub struct MSLUTSEL {
     pub X3: u8,
@@ -666,87 +615,100 @@ pub struct MSLUTSEL {
 
     pub X1: u8,
 
-    pub W3: B2,
-    pub W2: B2,
-    pub W1: B2,
-    pub W0: B2,
+    #[bits(2)]
+    pub W3: u8,
+    #[bits(2)]
+    pub W2: u8,
+    #[bits(2)]
+    pub W1: u8,
+    #[bits(2)]
+    pub W0: u8,
 }
 
-impl WritableRegister for MSLUTSEL {
+impl Default for MSLUTSEL {
     fn default() -> Self {
-        Self::from_bytes(0xFFFF8056_u32.to_be_bytes())
+        Self::from(0xFFFF8056_u32)
     }
 }
 
-#[bitfield]
-#[derive(Register, BitfieldSpecifier, Copy, Clone, Eq, PartialEq, Debug)]
+#[bitfield(u32, default = false)]
+#[derive(Register, Eq, PartialEq)]
 #[addr(0x69)]
 pub struct MSLUTSTART {
     pub OFFSET_SIN90: u8,
 
     pub START_SIN90: u8,
 
-    #[rustfmt::skip] #[skip] __: B8,
+    __: u8,
 
     pub START_SIN: u8,
 }
 
-impl WritableRegister for MSLUTSTART {
+impl Default for MSLUTSTART {
     fn default() -> Self {
-        Self::from_bytes(0x00F70000_u32.to_be_bytes())
+        Self::from(0x00F70000_u32)
     }
 }
 
-#[bitfield]
-#[derive(Register, BitfieldSpecifier, Copy, Clone, Eq, PartialEq, Debug)]
+#[bitfield(u32)]
+#[derive(Register, Eq, PartialEq)]
 #[addr(0x6A)]
 pub struct MSCNT {
-    #[rustfmt::skip] #[skip] __: B8,
+    __: u8,
 
-    #[rustfmt::skip] #[skip] __: B8,
+    __: u8,
 
-    #[rustfmt::skip] #[skip] __: B7,
-    pub MSCNT: B9,
+    #[rustfmt::skip] #[bits(7)] __: u8,
+    #[bits(9)]
+    pub MSCNT: u16,
 }
 
-#[bitfield]
-#[derive(Register, BitfieldSpecifier, Copy, Clone, Eq, PartialEq, Debug)]
+#[bitfield(u32)]
+#[derive(Register, Eq, PartialEq)]
 #[addr(0x6B)]
 pub struct MSCURACT {
-    #[rustfmt::skip] #[skip] __: B7,
-    pub CUR_A: B9,
+    #[rustfmt::skip] #[bits(7)] __: u8,
+    #[bits(9)]
+    pub CUR_A: u16,
 
-    #[rustfmt::skip] #[skip] __: B7,
-    pub CUR_B: B9,
+    #[rustfmt::skip] #[bits(7)] __: u8,
+    #[bits(9)]
+    pub CUR_B: u16,
 }
 
-#[bitfield]
-#[derive(Register, BitfieldSpecifier, Copy, Clone, Eq, PartialEq, Debug)]
+#[bitfield(u32, default = false)]
+#[derive(Register, Eq, PartialEq)]
 #[addr(0x6C)]
 pub struct CHOPCONF {
     pub diss2vs: bool,
     pub diss2g: bool,
     pub dedge: bool,
     pub intpol: bool,
-    pub MRES: B4,
+    #[bits(4)]
+    pub MRES: u8,
 
-    pub TPFD: B4,
+    #[bits(4)]
+    pub TPFD: u8,
     pub vhighchm: bool,
     pub vhighfs: bool,
-    #[rustfmt::skip] #[skip] __: B1,
-    pub TBL: B2,
+    #[rustfmt::skip] #[skip] __: bool,
+    #[bits(2)]
+    pub TBL: u8,
 
     pub chm: bool,
-    #[rustfmt::skip] #[skip] __: B1,
+    #[rustfmt::skip] #[skip] __: bool,
     pub disfdcc: bool,
     pub fd3: bool,
-    pub HENDOFFSET: B4,
+    #[bits(4)]
+    pub HENDOFFSET: u8,
 
-    pub HSTRT_TFD210: B3,
-    pub TOFF: B4,
+    #[bits(3)]
+    pub HSTRT_TFD210: u8,
+    #[bits(4)]
+    pub TOFF: u8,
 }
 
-impl WritableRegister for CHOPCONF {
+impl Default for CHOPCONF {
     fn default() -> Self {
         Self::new()
             .with_intpol(true)
@@ -757,29 +719,33 @@ impl WritableRegister for CHOPCONF {
     }
 }
 
-#[bitfield]
-#[derive(Register, BitfieldSpecifier, Copy, Clone, Eq, PartialEq, Debug)]
+#[bitfield(u32)]
+#[derive(Register, Eq, PartialEq)]
 #[addr(0x6D)]
 pub struct COOLCONF {
-    #[rustfmt::skip] #[skip] __: B7,
+    #[rustfmt::skip] #[bits(7)] __: u8,
     pub sfilt: bool,
 
-    #[rustfmt::skip] #[skip] __: B1,
-    pub sgt: B7,
+    #[rustfmt::skip] #[skip] __: bool,
+    #[bits(7)]
+    pub sgt: u8,
 
     pub seimin: bool,
-    pub sedn: B2,
-    #[rustfmt::skip] #[skip] __: B1,
-    pub semax: B4,
+    #[bits(2)]
+    pub sedn: u8,
+    #[rustfmt::skip] #[skip] __: bool,
+    #[bits(4)]
+    pub semax: u8,
 
-    #[rustfmt::skip] #[skip] __: B1,
-    pub seup: B2,
-    #[rustfmt::skip] #[skip] __: B1,
-    pub semin: B4,
+    #[rustfmt::skip] #[skip] __: bool,
+    #[bits(2)]
+    pub seup: u8,
+    #[rustfmt::skip] #[skip] __: bool,
+    #[bits(4)]
+    pub semin: u8,
 }
 
-#[bitfield]
-#[derive(BitfieldSpecifier, Copy, Clone, Eq, PartialEq, Debug)]
+#[bitfield(u8)]
 pub struct SPI_STATUS {
     pub stst: bool,
     pub olb: bool,
@@ -791,43 +757,60 @@ pub struct SPI_STATUS {
     pub stallguard: bool,
 }
 
-#[bitfield]
-#[derive(Register, BitfieldSpecifier, Copy, Clone, Eq, PartialEq, Debug)]
+impl SPI_STATUS {
+    // This has to be a const fn
+    const fn into_bits(self) -> u32 {
+        self.int() as u32
+    }
+    const fn from_bits(value: u32) -> Self {
+        Self::new().with_int(value as u8)
+    }
+}
+
+#[bitfield(u32)]
+#[derive(Register, Eq, PartialEq)]
 #[addr(0x6F)]
 pub struct DRV_STATUS {
+    #[bits(8)]
     pub SPI_STATUS: SPI_STATUS,
 
-    #[rustfmt::skip] #[skip] __: B3,
-    pub CS_ACTUAL: B5,
+    #[rustfmt::skip] #[bits(3)] __: u8,
+    #[bits(5)]
+    pub CS_ACTUAL: u8,
 
     pub fsactive: bool,
     pub stealth: bool,
     pub s2vsb: bool,
     pub s2vsa: bool,
-    #[rustfmt::skip] #[skip] __: B2,
-    pub SG_RESULT: B10,
+    #[rustfmt::skip] #[bits(2)] __: u8,
+    #[bits(10)]
+    pub SG_RESULT: u16,
 }
 
-#[bitfield]
-#[derive(Register, BitfieldSpecifier, Copy, Clone, Eq, PartialEq, Debug)]
+#[bitfield(u32, default = false)]
+#[derive(Register, Eq, PartialEq)]
 #[addr(0x70)]
 pub struct PWMCONF {
-    pub PWM_LIM: B4,
-    pub PWM_REG: B4,
+    #[bits(4)]
+    pub PWM_LIM: u8,
+    #[bits(4)]
+    pub PWM_REG: u8,
 
     pub pwm_dis_reg_stst: bool,
     pub pwm_meas_sd_enable: bool,
-    pub FREEWHEEL: B2,
+    #[bits(2)]
+    pub FREEWHEEL: u8,
     pub pwm_autograd: bool,
     pub pwm_autoscale: bool,
-    pub PWM_FREQ: B2,
+    #[bits(2)]
+    pub PWM_FREQ: u8,
 
     pub PWM_GRAD: u8,
 
     pub PWM_OFS: u8,
 }
 
-impl WritableRegister for PWMCONF {
+impl Default for PWMCONF {
     fn default() -> Self {
         Self::new()
             .with_PWM_LIM(0xC)
@@ -838,59 +821,62 @@ impl WritableRegister for PWMCONF {
     }
 }
 
-#[bitfield]
-#[derive(Register, BitfieldSpecifier, Copy, Clone, Eq, PartialEq, Debug)]
+#[bitfield(u32)]
+#[derive(Register, Eq, PartialEq)]
 #[addr(0x71)]
 pub struct PWM_SCALE {
-    #[rustfmt::skip] #[skip] __: B7,
-    pub PWM_SCALE_AUTO: B9,
+    #[rustfmt::skip] #[bits(7)] __: u8,
+    #[bits(9)]
+    pub PWM_SCALE_AUTO: u16,
 
-    #[rustfmt::skip] #[skip] __: B7,
-    pub PWM_SCALE_SUM: B9,
+    #[rustfmt::skip] #[bits(7)] __: u8,
+    #[bits(9)]
+    pub PWM_SCALE_SUM: u16,
 }
 
-#[bitfield]
-#[derive(Register, BitfieldSpecifier, Copy, Clone, Eq, PartialEq, Debug)]
+#[bitfield(u32)]
+#[derive(Register, Eq, PartialEq)]
 #[addr(0x72)]
 pub struct PWM_AUTO {
-    #[rustfmt::skip] #[skip] __: B8,
+    __: u8,
 
     pub PWM_GRAD_AUTO: u8,
 
-    #[rustfmt::skip] #[skip] __: B8,
+    __: u8,
 
     pub PWM_OFS_AUTO: u8,
 }
 
-#[bitfield]
-#[derive(Register, BitfieldSpecifier, Copy, Clone, Eq, PartialEq, Debug)]
+#[bitfield(u32)]
+#[derive(Register, Eq, PartialEq)]
 #[addr(0x74)]
 pub struct SG4_THRS {
-    #[rustfmt::skip] #[skip] __: B8,
+    __: u8,
 
-    #[rustfmt::skip] #[skip] __: B8,
+    __: u8,
 
-    #[rustfmt::skip] #[skip] __: B6,
+    #[rustfmt::skip] #[bits(6)] __: u8,
     pub sg_angle_offset: bool,
     pub sg4_filt_en: bool,
 
     pub SG4_THRS: u8,
 }
 
-#[bitfield]
-#[derive(Register, BitfieldSpecifier, Copy, Clone, Eq, PartialEq, Debug)]
+#[bitfield(u32)]
+#[derive(Register, Eq, PartialEq)]
 #[addr(0x75)]
 pub struct SG4_RESULT {
-    #[rustfmt::skip] #[skip] __: B8,
+    __: u8,
 
-    #[rustfmt::skip] #[skip] __: B8,
+    __: u8,
 
-    #[rustfmt::skip] #[skip] __: B6,
-    pub SG4_RESULT: B10,
+    #[rustfmt::skip] #[bits(6)] __: u8,
+    #[bits(10)]
+    pub SG4_RESULT: u16,
 }
 
-#[bitfield]
-#[derive(Register, BitfieldSpecifier, Copy, Clone, Eq, PartialEq, Debug)]
+#[bitfield(u32)]
+#[derive(Register, Eq, PartialEq)]
 #[addr(0x76)]
 pub struct SG4_IND {
     pub SG4_IND_3: u8,
