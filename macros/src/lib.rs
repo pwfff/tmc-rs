@@ -34,6 +34,10 @@ fn impl_register(name: &Ident, addr: &LitInt) -> proc_macro2::TokenStream {
             fn as_word(&self) -> u32 {
                 u32::from_be_bytes(self.into_bytes())
             }
+
+            fn bytes(&self) -> [u8; 4] {
+                self.into_bytes().map(|b| b.reverse_bits())
+            }
         }
     }
 }

@@ -1,6 +1,8 @@
 use modular_bitfield::bitfield;
 use modular_bitfield::prelude::*;
 use modular_bitfield::BitfieldSpecifier;
+use embedded_hal::blocking::spi::Transfer;
+
 use tmc_rs_macros::Register;
 
 use super::Register;
@@ -10,6 +12,7 @@ use super::WritableRegister;
 pub const TMC2240_REGISTER_COUNT: usize = 128;
 
 #[bitfield]
+#[derive(Debug)]
 pub struct TMC2240 {
     // 0x00 - 0x0F
     pub GCONF: GCONF,
@@ -179,23 +182,25 @@ impl Default for TMC2240 {
 }
 
 impl Registers<TMC2240_REGISTER_COUNT> for TMC2240 {
-    fn reset(&self, write_spi: &mut impl FnMut(u8, u32)) {
-        self.GCONF().write(write_spi);
-        self.DRV_CONF().write(write_spi);
-        self.ENC_CONST().write(write_spi);
-        self.OTW_OV_VTH().write(write_spi);
-        self.MSLUT0().write(write_spi);
-        self.MSLUT1().write(write_spi);
-        self.MSLUT2().write(write_spi);
-        self.MSLUT3().write(write_spi);
-        self.MSLUT4().write(write_spi);
-        self.MSLUT5().write(write_spi);
-        self.MSLUT6().write(write_spi);
-        self.MSLUT7().write(write_spi);
-        self.MSLUTSEL().write(write_spi);
-        self.MSLUTSTART().write(write_spi);
-        self.CHOPCONF().write(write_spi);
-        self.PWMCONF().write(write_spi);
+    fn reset<S: Transfer<u8>>(&self, spi: &mut S) -> Result<(), S::Error> {
+        self.GCONF().write(spi)?;
+        self.DRV_CONF().write(spi)?;
+        self.ENC_CONST().write(spi)?;
+        self.OTW_OV_VTH().write(spi)?;
+        self.MSLUT0().write(spi)?;
+        self.MSLUT1().write(spi)?;
+        self.MSLUT2().write(spi)?;
+        self.MSLUT3().write(spi)?;
+        self.MSLUT4().write(spi)?;
+        self.MSLUT5().write(spi)?;
+        self.MSLUT6().write(spi)?;
+        self.MSLUT7().write(spi)?;
+        self.MSLUTSEL().write(spi)?;
+        self.MSLUTSTART().write(spi)?;
+        self.CHOPCONF().write(spi)?;
+        self.PWMCONF().write(spi)?;
+
+        Ok(())
     }
 }
 
@@ -249,6 +254,30 @@ pub struct GCONF {
 impl WritableRegister for GCONF {
     fn default() -> Self {
         Self::new().with_multistep_filt(true)
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::registers::{WritableRegister, Register, tmc2240::CHOPCONF};
+
+    use super::GCONF;
+
+    #[test]
+    fn default_bytes() {
+        let mut foo = GCONF::default();
+        assert_eq!(foo.bytes(), [0,0,0,0x08], "{:x?} != {:x?}", foo.bytes(), [0,0,0,0x08]);
+        foo.set_en_pwm_mode(true);
+        assert_eq!(foo.bytes(), [0,0,0,0x0C]);
+
+        //Self::new()
+        //    .with_intpol(true)
+        //    .with_TPFD(0x4)
+        //    .with_TBL(0b10)
+        //    .with_HENDOFFSET(0x2)
+        //    .with_HSTRT_TFD210(0x5)
+        let mut bar = CHOPCONF::default();
+        assert_eq!(bar.bytes(), [0,0,0,0x08], "{:x?} != {:x?}", bar.bytes(), [0,0,0,0x08]);
     }
 }
 
