@@ -20,7 +20,7 @@ pub trait Register: From<u32> + Into<u32> + Default {
         ])))
     }
 
-    fn write<S: Transfer<u8>>(&self, spi: &mut S) -> Result<(), S::Error> {
+    fn write<S: Transfer<u8>>(self, spi: &mut S) -> Result<(), S::Error> {
         let bytes = self.bytes();
         let addr = Self::addr();
 

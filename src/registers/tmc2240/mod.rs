@@ -148,16 +148,34 @@ impl Default for GCONF {
 
 #[cfg(test)]
 mod test {
-    use crate::registers::{Register, tmc2240::CHOPCONF};
+    use crate::registers::{tmc2240::CHOPCONF, Register};
 
     use super::GCONF;
+
+    macro_rules! hex_eq {
+        ($a:expr, $b:expr) => {
+            assert_eq!(
+                $a,
+                $b,
+                "{:02x?} != {:02x?}",
+                $a,
+                $b,
+            );
+        };
+        ($a:expr, $b:expr,) => {
+            hex_eq!($a, $b);
+        };
+    }
 
     #[test]
     fn default_bytes() {
         let mut foo = GCONF::default();
-        assert_eq!(foo.bytes(), [0,0,0,0x08], "{:x?} != {:x?}", foo.bytes(), [0,0,0,0x08]);
+        hex_eq!(
+            foo.bytes(),
+            [0, 0, 0, 0x08],
+        );
         foo.set_en_pwm_mode(true);
-        assert_eq!(foo.bytes(), [0,0,0,0x0C]);
+        assert_eq!(foo.bytes(), [0, 0, 0, 0x0C]);
 
         //Self::new()
         //    .with_intpol(true)
@@ -165,8 +183,11 @@ mod test {
         //    .with_TBL(0b10)
         //    .with_HENDOFFSET(0x2)
         //    .with_HSTRT_TFD210(0x5)
-        let mut bar = CHOPCONF::default();
-        assert_eq!(bar.bytes(), [0,0,0,0x08], "{:x?} != {:x?}", bar.bytes(), [0,0,0,0x08]);
+        let bar = CHOPCONF::default();
+        hex_eq!(
+            bar.bytes(),
+            [0x10, 0x41, 0x01, 0x50],
+        );
     }
 }
 
@@ -760,10 +781,12 @@ pub struct SPI_STATUS {
 impl SPI_STATUS {
     // This has to be a const fn
     const fn into_bits(self) -> u32 {
-        self.int() as u32
+        self.0 as u32
     }
     const fn from_bits(value: u32) -> Self {
-        Self::new().with_int(value as u8)
+        let mut new = Self::new();
+        new.0 = value as u8;
+        new
     }
 }
 
