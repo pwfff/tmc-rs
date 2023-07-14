@@ -112,7 +112,7 @@ impl Registers<TMC2240_REGISTER_COUNT> for TMC2240 {
 //    }
 //}
 
-#[bitfield(u32, default = false)]
+#[bitfield(u32, default=false, endianness=Big)]
 #[derive(Register, Eq, PartialEq)]
 #[addr(0x00)]
 pub struct GCONF {
@@ -191,7 +191,7 @@ mod test {
     }
 }
 
-#[bitfield(u32)]
+#[bitfield(u32, endianness=Big)]
 #[derive(Register, Eq, PartialEq)]
 #[addr(0x01)]
 pub struct GSTAT {
@@ -209,7 +209,7 @@ pub struct GSTAT {
     pub reset: bool,
 }
 
-#[bitfield(u32)]
+#[bitfield(u32, endianness=Big)]
 #[derive(Register, Eq, PartialEq)]
 #[addr(0x02)]
 pub struct IFCNT {
@@ -263,7 +263,7 @@ impl SENDDELAY {
     }
 }
 
-#[bitfield(u32)]
+#[bitfield(u32, endianness=Big)]
 #[derive(Register, Eq, PartialEq)]
 #[addr(0x03)]
 pub struct NODECONF {
@@ -278,7 +278,7 @@ pub struct NODECONF {
     pub NODEADDR: u8,
 }
 
-#[bitfield(u32)]
+#[bitfield(u32, endianness=Big)]
 #[derive(Register, Eq, PartialEq)]
 #[addr(0x04)]
 pub struct IOIN {
@@ -357,7 +357,7 @@ impl CURRENT_RANGE {
     }
 }
 
-#[bitfield(u32)]
+#[bitfield(u32, endianness=Big)]
 #[derive(Register, Eq, PartialEq)]
 #[addr(0x0A)]
 pub struct DRV_CONF {
@@ -375,7 +375,7 @@ pub struct DRV_CONF {
     pub CURRENT_RANGE: CURRENT_RANGE,
 }
 
-#[bitfield(u32)]
+#[bitfield(u32, endianness=Big)]
 #[derive(Register, Eq, PartialEq)]
 #[addr(0x0B)]
 pub struct GLOBAL_SCALER {
@@ -389,7 +389,7 @@ pub struct GLOBAL_SCALER {
     pub GLOBALSCALER: u8,
 }
 
-#[bitfield(u32)]
+#[bitfield(u32, endianness=Big)]
 #[derive(Register, Eq, PartialEq)]
 #[addr(0x10)]
 pub struct IHOLD_IRUN {
@@ -410,7 +410,7 @@ pub struct IHOLD_IRUN {
     pub IHOLD: u8,
 }
 
-#[bitfield(u32)]
+#[bitfield(u32, endianness=Big)]
 #[derive(Register, Eq, PartialEq)]
 #[addr(0x11)]
 pub struct TPOWERDOWN {
@@ -423,7 +423,7 @@ pub struct TPOWERDOWN {
     pub TPOWERDOWN: u8,
 }
 
-#[bitfield(u32)]
+#[bitfield(u32, endianness=Big)]
 #[derive(Register, Eq, PartialEq)]
 #[addr(0x12)]
 pub struct TSTEP {
@@ -434,7 +434,7 @@ pub struct TSTEP {
     pub TSTEP: u32,
 }
 
-#[bitfield(u32)]
+#[bitfield(u32, endianness=Big)]
 #[derive(Register, Eq, PartialEq)]
 #[addr(0x13)]
 pub struct TPWMTHRS {
@@ -445,7 +445,7 @@ pub struct TPWMTHRS {
     pub TPWMTHRS: u32,
 }
 
-#[bitfield(u32)]
+#[bitfield(u32, endianness=Big)]
 #[derive(Register, Eq, PartialEq)]
 #[addr(0x14)]
 pub struct TCOOLTHRS {
@@ -456,7 +456,7 @@ pub struct TCOOLTHRS {
     pub TCOOLTHRS: u32,
 }
 
-#[bitfield(u32)]
+#[bitfield(u32, endianness=Big)]
 #[derive(Register, Eq, PartialEq)]
 #[addr(0x15)]
 pub struct THIGH {
@@ -467,7 +467,7 @@ pub struct THIGH {
     pub THIGH: u32,
 }
 
-#[bitfield(u32)]
+#[bitfield(u32, endianness=Big)]
 #[derive(Register, Eq, PartialEq)]
 #[addr(0x2D)]
 pub struct DIRECT_MODE {
@@ -482,7 +482,7 @@ pub struct DIRECT_MODE {
     pub DIRECT_COIL_B: u8,
 }
 
-#[bitfield(u32)]
+#[bitfield(u32, endianness=Big)]
 #[derive(Register, Eq, PartialEq)]
 #[addr(0x38)]
 pub struct ENCMODE {
@@ -505,14 +505,14 @@ pub struct ENCMODE {
     pub pol_A: bool,
 }
 
-#[bitfield(u32)]
+#[bitfield(u32, endianness=Big)]
 #[derive(Register, Eq, PartialEq)]
 #[addr(0x39)]
 pub struct X_ENC {
     pub X_ENC: i32,
 }
 
-#[bitfield(u32, default = false)]
+#[bitfield(u32, default=false, endianness=Big)]
 #[derive(Register, Eq, PartialEq)]
 #[addr(0x3A)]
 pub struct ENC_CONST {
@@ -525,7 +525,7 @@ impl Default for ENC_CONST {
     }
 }
 
-#[bitfield(u32)]
+#[bitfield(u32, endianness=Big)]
 #[derive(Register, Eq, PartialEq)]
 #[addr(0x3B)]
 pub struct ENC_STATUS {
@@ -539,14 +539,14 @@ pub struct ENC_STATUS {
     pub n_event: bool,
 }
 
-#[bitfield(u32)]
+#[bitfield(u32, endianness=Big)]
 #[derive(Register, Eq, PartialEq)]
 #[addr(0x3C)]
 pub struct ENC_LATCH {
     pub ENC_LATCH: u32,
 }
 
-#[bitfield(u32)]
+#[bitfield(u32, endianness=Big)]
 #[derive(Register, Eq, PartialEq)]
 #[addr(0x50)]
 pub struct ADC_VSUPPLY_AIN {
@@ -559,7 +559,7 @@ pub struct ADC_VSUPPLY_AIN {
     pub ADC_VSUPPLY: u16,
 }
 
-#[bitfield(u32)]
+#[bitfield(u32, endianness=Big)]
 #[derive(Register, Eq, PartialEq)]
 #[addr(0x51)]
 pub struct ADC_TEMP {
@@ -578,7 +578,7 @@ impl ADC_TEMP {
     }
 }
 
-#[bitfield(u32, default = false)]
+#[bitfield(u32, default=false, endianness=Big)]
 #[derive(Register, Eq, PartialEq)]
 #[addr(0x52)]
 pub struct OTW_OV_VTH {
@@ -602,7 +602,7 @@ impl Default for OTW_OV_VTH {
 // TODO: helpers for all this mslut stuff...
 macro_rules! mslut {
     ($name:ident, $addr:literal, $default:literal) => {
-        #[bitfield(u32, default = false)]
+        #[bitfield(u32, default=false, endianness=Big)]
         #[derive(Register, Eq, PartialEq)]
         #[addr($addr)]
         pub struct $name {
@@ -626,7 +626,7 @@ mslut!(MSLUT_5, 0x65, 0xB5BB777D_u32);
 mslut!(MSLUT_6, 0x66, 0x49295556_u32);
 mslut!(MSLUT_7, 0x67, 0x00404222_u32);
 
-#[bitfield(u32, default = false)]
+#[bitfield(u32, default=false, endianness=Big)]
 #[derive(Register, Eq, PartialEq)]
 #[addr(0x68)]
 pub struct MSLUTSEL {
@@ -652,7 +652,7 @@ impl Default for MSLUTSEL {
     }
 }
 
-#[bitfield(u32, default = false)]
+#[bitfield(u32, default=false, endianness=Big)]
 #[derive(Register, Eq, PartialEq)]
 #[addr(0x69)]
 pub struct MSLUTSTART {
@@ -671,7 +671,7 @@ impl Default for MSLUTSTART {
     }
 }
 
-#[bitfield(u32)]
+#[bitfield(u32, endianness=Big)]
 #[derive(Register, Eq, PartialEq)]
 #[addr(0x6A)]
 pub struct MSCNT {
@@ -684,7 +684,7 @@ pub struct MSCNT {
     pub MSCNT: u16,
 }
 
-#[bitfield(u32)]
+#[bitfield(u32, endianness=Big)]
 #[derive(Register, Eq, PartialEq)]
 #[addr(0x6B)]
 pub struct MSCURACT {
@@ -697,7 +697,7 @@ pub struct MSCURACT {
     pub CUR_B: u16,
 }
 
-#[bitfield(u32, default = false)]
+#[bitfield(u32, default=false, endianness=Big)]
 #[derive(Register, Eq, PartialEq)]
 #[addr(0x6C)]
 pub struct CHOPCONF {
@@ -740,7 +740,7 @@ impl Default for CHOPCONF {
     }
 }
 
-#[bitfield(u32)]
+#[bitfield(u32, endianness=Big)]
 #[derive(Register, Eq, PartialEq)]
 #[addr(0x6D)]
 pub struct COOLCONF {
@@ -790,7 +790,7 @@ impl SPI_STATUS {
     }
 }
 
-#[bitfield(u32)]
+#[bitfield(u32, endianness=Big)]
 #[derive(Register, Eq, PartialEq)]
 #[addr(0x6F)]
 pub struct DRV_STATUS {
@@ -810,7 +810,7 @@ pub struct DRV_STATUS {
     pub SG_RESULT: u16,
 }
 
-#[bitfield(u32, default = false)]
+#[bitfield(u32, default=false, endianness=Big)]
 #[derive(Register, Eq, PartialEq)]
 #[addr(0x70)]
 pub struct PWMCONF {
@@ -844,7 +844,7 @@ impl Default for PWMCONF {
     }
 }
 
-#[bitfield(u32)]
+#[bitfield(u32, endianness=Big)]
 #[derive(Register, Eq, PartialEq)]
 #[addr(0x71)]
 pub struct PWM_SCALE {
@@ -857,7 +857,7 @@ pub struct PWM_SCALE {
     pub PWM_SCALE_SUM: u16,
 }
 
-#[bitfield(u32)]
+#[bitfield(u32, endianness=Big)]
 #[derive(Register, Eq, PartialEq)]
 #[addr(0x72)]
 pub struct PWM_AUTO {
@@ -870,7 +870,7 @@ pub struct PWM_AUTO {
     pub PWM_OFS_AUTO: u8,
 }
 
-#[bitfield(u32)]
+#[bitfield(u32, endianness=Big)]
 #[derive(Register, Eq, PartialEq)]
 #[addr(0x74)]
 pub struct SG4_THRS {
@@ -885,7 +885,7 @@ pub struct SG4_THRS {
     pub SG4_THRS: u8,
 }
 
-#[bitfield(u32)]
+#[bitfield(u32, endianness=Big)]
 #[derive(Register, Eq, PartialEq)]
 #[addr(0x75)]
 pub struct SG4_RESULT {
@@ -898,7 +898,7 @@ pub struct SG4_RESULT {
     pub SG4_RESULT: u16,
 }
 
-#[bitfield(u32)]
+#[bitfield(u32, endianness=Big)]
 #[derive(Register, Eq, PartialEq)]
 #[addr(0x76)]
 pub struct SG4_IND {
